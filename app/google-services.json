@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "304771797836",
+    "firebase_url": "https://covid-2d867.firebaseio.com",
+    "project_id": "covid-2d867",
+    "storage_bucket": "covid-2d867.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:304771797836:android:a9fd4f7a1aa5c7008975e9",
+        "android_client_info": {
+          "package_name": "com.covid.scanning"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "304771797836-nqkfr7rb616imif6apb6h90cfmkov3fs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIoeRPjsY1-lFkRD_rB8291uhK0VOwIAA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "304771797836-nqkfr7rb616imif6apb6h90cfmkov3fs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
