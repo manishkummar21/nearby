@@ -77,14 +77,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateDetails() {
         user?.let {
-            databinding.id.text = "Your BluetoothID is " + it.bluetoothID
+            databinding.id.text = "Your BluetoothID is " + it.user_id
         }
     }
 
 
     fun checkPermission() {
         if (hasPermissions(this, REQUIRED_PERMISSIONS)) {
-            startService(user!!.bluetoothID)
+            startService(user!!.user_id)
         } else {
             requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS)
         }

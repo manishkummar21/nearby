@@ -3,7 +3,6 @@ package com.covid.scanning;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -420,7 +419,7 @@ public class PulsatorLayout extends RelativeLayout {
             name.setTextColor(getResources().getColor(R.color.white));
             name.setLayoutParams(layoutParams);
 
-            name.setText(TextUtils.isEmpty(device.getEndpointName()) ? "UNKNOWN" : device.getEndpointName());
+//            name.setText(TextUtils.isEmpty(device.getEndpointName()) ? "UNKNOWN" : device.getEndpointName());
 
             l.addView(name);
 

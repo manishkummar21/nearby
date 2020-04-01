@@ -5,14 +5,16 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.covid.scanning.databinding.ActivityDiscoverBinding
+import com.covid.scanning.login.model.User
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.*
 import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.*
-import kotlin.collections.HashSet
 
 class DiscoverActivity : AppCompatActivity() {
 
@@ -20,7 +22,6 @@ class DiscoverActivity : AppCompatActivity() {
 
     lateinit var mainBinding: ActivityDiscoverBinding
 
-    // Our handle to Nearby Connections
     private var connectionsClient: ConnectionsClient? = null
 
     private val STRATEGY = Strategy.P2P_STAR
@@ -29,7 +30,7 @@ class DiscoverActivity : AppCompatActivity() {
 
     private var database: FirebaseFirestore? = null
 
-    private var restitutionIDS: HashSet<String> = HashSet()
+    private var user: User? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +38,7 @@ class DiscoverActivity : AppCompatActivity() {
 
         mainBinding = DataBindingUtil.setContentView(this, R.layout.activity_discover)
 
-        restitutionIDS.clear()
+        user = App.getInstance().prefManager.userDetails
 
         connectionsClient = Nearby.getConnectionsClient(this)
 
@@ -56,7 +57,6 @@ class DiscoverActivity : AppCompatActivity() {
                 .addOnSuccessListener { result ->
                     for (document in result) {
                         Log.d("Tag", "${document.id} => ${document.data}")
-                        restitutionIDS.add(document.data.getValue("bluetoothID") as String)
                     }
                 }
                 .addOnFailureListener { exception ->
@@ -74,15 +74,12 @@ class DiscoverActivity : AppCompatActivity() {
                         when (dc.type) {
                             DocumentChange.Type.ADDED -> {
                                 Log.d(TAG, "New value: ${dc.document.data}")
-                                restitutionIDS.add(dc.document.data.getValue("bluetoothID") as String)
                             }
                             DocumentChange.Type.MODIFIED -> {
                                 Log.d(TAG, "Modified city: ${dc.document.data}")
-                                restitutionIDS.add(dc.document.data.getValue("bluetoothID") as String)
                             }
                             DocumentChange.Type.REMOVED -> {
                                 Log.d(TAG, "Removed city: ${dc.document.data}")
-                                restitutionIDS.remove(dc.document.data.getValue("bluetoothID") as String)
 
                             }
                         }
@@ -96,6 +93,8 @@ class DiscoverActivity : AppCompatActivity() {
     }
 
     private fun startDiscovery() {
+
+        FieldValue.serverTimestamp()
 
         val discoveryOptions = DiscoveryOptions.Builder().setStrategy(STRATEGY).build()
 
@@ -124,12 +123,21 @@ class DiscoverActivity : AppCompatActivity() {
             Log.i(TAG, "onEndpointFound: endpoint found")
             Log.d(TAG, "Endpoint ID: $endpointId")
             Log.d(TAG, "Endpoint Name:" + info.endpointName)
-            if (restitutionIDS.contains(info.endpointName))
-                mainBinding.pulsator.addDetecteddevice(info)
+            addDevice(DetectedDeviceModel(info.endpointName, FieldValue.serverTimestamp()))
+            mainBinding.pulsator.addDetecteddevice(info)
         }
 
         override fun onEndpointLost(endpointId: String) {
 
+        }
+    }
+
+    private fun addDevice(detectedDevice: DetectedDeviceModel) {
+
+        database?.let {
+
+            it.collection("users").document(user!!.user_id).collection("detectedDevices").document(detectedDevice.bluetoothID)
+                .set(detectedDevice, SetOptions.merge())
         }
     }
 
