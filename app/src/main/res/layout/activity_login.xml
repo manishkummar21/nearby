@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
+
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="vertical">
+
+
+		<androidx.appcompat.widget.AppCompatImageView
+			android:id="@+id/logo"
+			android:layout_width="100dp"
+			android:layout_height="100dp"
+			android:layout_marginTop="?attr/actionBarSize"
+			android:src="@drawable/nearbylogo"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintTop_toTopOf="parent" />
+
+
+		<androidx.appcompat.widget.AppCompatTextView
+			android:id="@+id/h2"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginLeft="10dp"
+			android:layout_marginTop="20dp"
+			android:layout_marginRight="10dp"
+			android:gravity="center"
+			android:text="Sign in to continue"
+			android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+			android:textColor="#000"
+			android:textStyle="bold"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintTop_toBottomOf="@id/logo" />
+
+		<com.google.android.material.textfield.TextInputLayout
+			android:id="@+id/txtinput1"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="10dp"
+			android:layout_marginTop="?attr/actionBarSize"
+			android:hint="@string/enter_mobile_no"
+			app:boxBackgroundColor="@color/transparent"
+			app:hintTextColor="#7A0BFB"
+			app:layout_constraintLeft_toLeftOf="parent"
+			app:layout_constraintRight_toRightOf="parent"
+			app:layout_constraintTop_toBottomOf="@id/h2"
+			app:theme="@style/EditextStyle">
+
+			<com.google.android.material.textfield.TextInputEditText
+				android:id="@+id/mobileno"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:inputType="phone"
+				android:textColor="#000"
+				android:textSize="16sp" />
+
+		</com.google.android.material.textfield.TextInputLayout>
+
+		<com.google.android.material.button.MaterialButton
+			android:id="@+id/login"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="35dp"
+			android:paddingLeft="25dp"
+			android:paddingTop="10dp"
+			android:paddingRight="25dp"
+			android:paddingBottom="10dp"
+			android:text="SIGN UP / Login"
+			android:textAppearance="@style/TextAppearance.MaterialComponents.Button"
+			android:textColor="@color/white"
+			android:textStyle="bold"
+			app:backgroundTint="@color/backgroundcolor"
+			app:cornerRadius="20dp"
+			app:iconGravity="textEnd"
+			app:layout_constraintLeft_toLeftOf="@id/txtinput1"
+			app:layout_constraintRight_toRightOf="@id/txtinput1"
+			app:layout_constraintTop_toBottomOf="@id/txtinput1"
+			app:rippleColor="@color/backgroundcolor" />
+
+
+	</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

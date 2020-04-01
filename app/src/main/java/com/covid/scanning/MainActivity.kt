@@ -13,33 +13,45 @@ import androidx.core.content.ContextCompat
 import android.bluetooth.BluetoothAdapter
 import android.os.Build
 import android.view.View
+import androidx.databinding.DataBindingUtil
+import com.covid.scanning.databinding.ActivityMainBinding
+import com.covid.scanning.login.model.User
 import java.lang.reflect.InvocationTargetException
+import android.app.ActivityManager
 
 
 class MainActivity : AppCompatActivity() {
 
     private val TAG = MainActivity::class.java.canonicalName
 
+    private lateinit var databinding: ActivityMainBinding
+
     private var bluetoothAdapter: BluetoothAdapter? = null
+
+    private var user: User? = null
 
     val REQUEST_ENABLE_BT = 2
 
-
     private val REQUIRED_PERMISSIONS = arrayOf(
-        Manifest.permission.BLUETOOTH,
-        Manifest.permission.BLUETOOTH_ADMIN,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_WIFI_STATE,
-        Manifest.permission.CHANGE_WIFI_STATE
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_WIFI_STATE,
+            Manifest.permission.CHANGE_WIFI_STATE
     )
 
     private val REQUEST_CODE_REQUIRED_PERMISSIONS = 1
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        databinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+
+        user = App.getInstance().prefManager.userDetails
+
+        updateDetails()
 
 
         findViewById<View>(R.id.startdiscovering).setOnClickListener {
@@ -50,20 +62,29 @@ class MainActivity : AppCompatActivity() {
                 enableBluetooth()
         }
 
-        if (checkIfDeviceSupports())
-            return
+        databinding.logout.setOnClickListener {
+            stopService(Intent(this, AdvertisingService::class.java))
+            App.getInstance().prefManager.logout()
+            startActivity(Intent(this, RegisterActivity::class.java))
+            finish()
+        }
+
 
         enableBluetooth()
 
+
     }
 
-    fun checkIfDeviceSupports(): Boolean {
-        return bluetoothAdapter == null
+    private fun updateDetails() {
+        user?.let {
+            databinding.id.text = "Your BluetoothID is " + it.bluetoothID
+        }
     }
+
 
     fun checkPermission() {
         if (hasPermissions(this, REQUIRED_PERMISSIONS)) {
-            startService(getBluetoothMacAddress())
+            startService(user!!.bluetoothID)
         } else {
             requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS)
         }
@@ -80,7 +101,7 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>, grantResults: IntArray
+            requestCode: Int, permissions: Array<String>, grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
@@ -118,6 +139,11 @@ class MainActivity : AppCompatActivity() {
 
     fun startService(name: String) {
 
+        if (isServiceRunning(AdvertisingService::class.java)) {
+            Toast.makeText(applicationContext, "Service is already running", Toast.LENGTH_LONG).show()
+            return
+        }
+
         val serviceIntent = Intent(this, AdvertisingService::class.java)
         serviceIntent.putExtra("inputExtra", name)
 
@@ -128,9 +154,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-    @SuppressLint("HardwareIds")
-    private fun getBluetoothMacAddress(): String {
-        return bluetoothAdapter!!.address
+    private fun isServiceRunning(serviceClass: Class<*>): Boolean {
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.name == service.service.className) {
+                return true
+            }
+        }
+        return false
     }
+
+
 }
